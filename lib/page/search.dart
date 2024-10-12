@@ -27,7 +27,7 @@ class SearchPage extends StatelessWidget {
 
   Widget _buildSearchbar(BuildContext context) {
     return Container(
-      color: primaryColor,
+      color: greyColor,
       child: SafeArea(
         child: Container(
           margin: EdgeInsets.symmetric(
