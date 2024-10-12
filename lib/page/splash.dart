@@ -9,7 +9,6 @@ class SplashPage extends StatefulWidget {
   static const routeName = 'splash';
 
   const SplashPage({super.key});
-
   @override
   _SplashPageState createState() => _SplashPageState();
 }
