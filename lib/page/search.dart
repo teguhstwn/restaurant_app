@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:restaurant_app_submission_1/provider/search_restaurant_provider.dart';
+import 'package:restaurant_app_submission_1/shared/theme.dart';
+import 'package:restaurant_app_submission_1/style/style.dart';
 import 'package:restaurant_app_submission_1/widget/common.dart';
 import 'package:restaurant_app_submission_1/widget/item_restaurant.dart';
-import 'package:restaurant_app_submission_1/provider/search_restaurant_provider.dart';
-import 'package:restaurant_app_submission_1/style/colors.dart';
-import 'package:restaurant_app_submission_1/style/style.dart';
 
 class SearchPage extends StatelessWidget {
   static final routeName = '/search';
 
   final String searchQuery;
 
-  const SearchPage(this.searchQuery, {super.key});
+  const SearchPage(this.searchQuery);
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class SearchPage extends StatelessWidget {
                 child: IconButton(
                   icon: Icon(
                     Icons.arrow_back_ios,
-                    color: primaryColor,
+                    color: greyColor,
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -79,9 +79,9 @@ class SearchPage extends StatelessWidget {
     return Expanded(
       child: Consumer<SearchRestaurantProvider>(
         builder: (context, state, _) {
-          if (state.state == ResourceState.Loading) {
+          if (state.state == ResourceState.loading) {
             return circularProgressIndicator();
-          } else if (state.state == ResourceState.HasData) {
+          } else if (state.state == ResourceState.hasData) {
             return Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: ListView.builder(
@@ -96,9 +96,9 @@ class SearchPage extends StatelessWidget {
                 itemCount: state.searchResult.restaurants.length,
               ),
             );
-          } else if (state.state == ResourceState.NoData) {
+          } else if (state.state == ResourceState.noData) {
             return Center(child: Text(state.message));
-          } else if (state.state == ResourceState.Error) {
+          } else if (state.state == ResourceState.error) {
             return Center(child: Text(state.message));
           } else {
             return Center(child: Text(''));

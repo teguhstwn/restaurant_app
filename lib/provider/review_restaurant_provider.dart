@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:restaurant_app_submission_1/data/api/api_service.dart';
 import 'package:restaurant_app_submission_1/data/model/review_restaurant.dart';
 
-enum ResourceReviewRestaurantState { Loading, Success, Error, None }
+enum ResourceReviewRestaurantState { loading, success, error, none }
 
 class ReviewRestaurantProvider extends ChangeNotifier {
   final ApiService apiService;
@@ -13,7 +13,7 @@ class ReviewRestaurantProvider extends ChangeNotifier {
   late ReviewRestaurantResult _searchResult;
 
   String _message = '';
-  ResourceReviewRestaurantState _state = ResourceReviewRestaurantState.None;
+  ResourceReviewRestaurantState _state = ResourceReviewRestaurantState.none;
 
   String get message => _message;
 
@@ -27,7 +27,7 @@ class ReviewRestaurantProvider extends ChangeNotifier {
     String review,
   ) async {
     try {
-      _state = ResourceReviewRestaurantState.Loading;
+      _state = ResourceReviewRestaurantState.loading;
       notifyListeners();
 
       final data = await apiService.postReview(
@@ -35,16 +35,16 @@ class ReviewRestaurantProvider extends ChangeNotifier {
         name: name,
         review: review,
       );
-      _state = ResourceReviewRestaurantState.Success;
+      _state = ResourceReviewRestaurantState.success;
       notifyListeners();
       return _searchResult = data;
     } on SocketException catch (_) {
-      _state = ResourceReviewRestaurantState.Error;
+      _state = ResourceReviewRestaurantState.error;
       notifyListeners();
       return _message =
           "Problem with your internet connection, please try again.";
     } catch (e) {
-      _state = ResourceReviewRestaurantState.Error;
+      _state = ResourceReviewRestaurantState.error;
       notifyListeners();
       return _message = "Error: $e";
     }

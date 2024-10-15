@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:restaurant_app_submission_1/page/favorite.dart';
 import 'package:restaurant_app_submission_1/widget/common.dart';
 import 'package:restaurant_app_submission_1/page/about.dart';
 import 'package:restaurant_app_submission_1/widget/item_restaurant.dart';
@@ -40,6 +41,13 @@ class HomePage extends StatelessWidget {
     );
   }
 
+// image: DecorationImage(
+//                   fit: BoxFit.fill,
+//                   image: AssetImage(
+//                     "assets/image_avatar.png",
+//                   ),
+//                 ),
+
   Widget _buildHeader(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,10 +80,20 @@ class HomePage extends StatelessWidget {
               ),
             ),
             IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, AboutPage.routeName);
-                },
-                icon: const Icon(Icons.info, color: Colors.white))
+              onPressed: () {
+                Navigator.pushNamed(context, FavoritePage.routeName);
+              },
+              icon: Icon(
+                Icons.favorite,
+                color: Colors.white,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, AboutPage.routeName);
+              },
+              icon: const Icon(Icons.settings, color: Colors.white),
+            )
           ],
         ),
         Container(
@@ -132,9 +150,9 @@ class HomePage extends StatelessWidget {
   Widget _buildList(BuildContext context) {
     return Consumer<ListRestaurantProvider>(
       builder: (context, state, _) {
-        if (state.state == ResourceState.Loading) {
+        if (state.state == ResourceState.loading) {
           return circularProgressIndicator();
-        } else if (state.state == ResourceState.HasData) {
+        } else if (state.state == ResourceState.hasData) {
           return ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -144,9 +162,9 @@ class HomePage extends StatelessWidget {
             },
             itemCount: state.restaurantsResult.restaurants.length,
           );
-        } else if (state.state == ResourceState.NoData) {
+        } else if (state.state == ResourceState.noData) {
           return Center(child: Text(state.message));
-        } else if (state.state == ResourceState.Error) {
+        } else if (state.state == ResourceState.error) {
           return Center(child: Text(state.message));
         } else {
           return Center(child: Text(''));

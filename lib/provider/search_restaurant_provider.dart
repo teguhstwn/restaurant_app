@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:restaurant_app_submission_1/data/api/api_service.dart';
 import 'package:restaurant_app_submission_1/data/model/search_restaurant.dart';
 
-enum ResourceState { Loading, HasData, NoData, Error }
+enum ResourceState { loading, hasData, noData, error }
 
 class SearchRestaurantProvider extends ChangeNotifier {
   final ApiService apiService;
@@ -25,26 +25,26 @@ class SearchRestaurantProvider extends ChangeNotifier {
 
   Future<dynamic> searchRestaurant(String query) async {
     try {
-      _state = ResourceState.Loading;
+      _state = ResourceState.loading;
       notifyListeners();
 
       final data = await apiService.searchRestaurant(query);
       if (data.restaurants.isEmpty) {
-        _state = ResourceState.NoData;
+        _state = ResourceState.noData;
         notifyListeners();
         return _message = "Restaurant not found, try other keyword.";
       } else {
-        _state = ResourceState.HasData;
+        _state = ResourceState.hasData;
         notifyListeners();
         return _searchResult = data;
       }
     } on SocketException catch (_) {
-      _state = ResourceState.Error;
+      _state = ResourceState.error;
       notifyListeners();
       return _message =
           "Problem with your internet connection, please try again.";
     } catch (e) {
-      _state = ResourceState.Error;
+      _state = ResourceState.error;
       notifyListeners();
       return _message = "Error: $e";
     }

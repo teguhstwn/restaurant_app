@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app_submission_1/common/common.dart';
 import 'package:restaurant_app_submission_1/data/api/api_service.dart';
 import 'package:restaurant_app_submission_1/data/model/list_restaurant.dart';
 import 'package:restaurant_app_submission_1/page/detail.dart';
-import 'package:restaurant_app_submission_1/style/colors.dart';
+import 'package:restaurant_app_submission_1/shared/theme.dart';
 import 'package:restaurant_app_submission_1/style/style.dart';
 
 Widget buildRestaurantItem(BuildContext context, Restaurant restaurant) {
@@ -12,8 +13,7 @@ Widget buildRestaurantItem(BuildContext context, Restaurant restaurant) {
       decoration: cardDecoration(),
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, DetailPage.routeName,
-              arguments: restaurant.id);
+          Navigation.intentWithData(DetailPage.routeName, restaurant.id);
         },
         child: Row(
           children: [
@@ -63,7 +63,7 @@ Widget buildRestaurantItem(BuildContext context, Restaurant restaurant) {
                         children: [
                           Icon(
                             Icons.star,
-                            color: primaryColor,
+                            color: greyColor,
                             size: 16,
                           ),
                           Container(
@@ -81,11 +81,11 @@ Widget buildRestaurantItem(BuildContext context, Restaurant restaurant) {
               ),
             ),
             Expanded(
-              flex: 1,
               child: Icon(
                 Icons.arrow_forward_ios,
-                color: primaryColor,
+                color: greyColor,
               ),
+              flex: 1,
             )
           ],
         ),

@@ -15,7 +15,7 @@ class ApiService {
   static final String _apiKey = "12345";
 
   Future<RestaurantResult> listRestaurant() async {
-    final response = await http.get(Uri.parse('${_baseUrl}list'));
+    final response = await http.get(Uri.parse(_baseUrl + 'list'));
 
     if (response.statusCode == 200) {
       return RestaurantResult.fromJson(json.decode(response.body));
@@ -26,7 +26,7 @@ class ApiService {
 
   Future<DetailRestaurantResult> detailRestaurant(String restaurantId) async {
     final response =
-        await http.get(Uri.parse('${_baseUrl}detail/$restaurantId'));
+        await http.get(Uri.parse(_baseUrl + 'detail/' + restaurantId));
 
     if (response.statusCode == 200) {
       return DetailRestaurantResult.fromJson(json.decode(response.body));
@@ -36,7 +36,7 @@ class ApiService {
   }
 
   Future<SearchRestaurantResult> searchRestaurant(String query) async {
-    final response = await http.get(Uri.parse('${_baseUrl}search?q=$query'));
+    final response = await http.get(Uri.parse(_baseUrl + 'search?q=$query'));
 
     if (response.statusCode == 200) {
       return SearchRestaurantResult.fromJson(json.decode(response.body));
@@ -51,7 +51,7 @@ class ApiService {
     required String review,
   }) async {
     final response = await http.post(
-      Uri.parse('${_baseUrl}review'),
+      Uri.parse(_baseUrl + 'review'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'X-Auth-Token': _apiKey,

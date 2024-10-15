@@ -1,12 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_app_submission_1/data/api/api_service.dart';
-import 'package:restaurant_app_submission_1/data/model/detail_restaurant.dart';
-import 'package:restaurant_app_submission_1/provider/detail_restaurant_provider.dart';
+import 'package:restaurant_app_submission_1/data/model/list_restaurant.dart';
+import 'package:restaurant_app_submission_1/provider/database_provider.dart';
 import 'package:restaurant_app_submission_1/provider/review_restaurant_provider.dart';
+import 'package:restaurant_app_submission_1/widget/common.dart';
+import 'package:restaurant_app_submission_1/data/api/api_service.dart';
+import 'package:restaurant_app_submission_1/data/model/detail_restaurant.dart'
+    as detail;
+import 'package:restaurant_app_submission_1/provider/detail_restaurant_provider.dart';
 import 'package:restaurant_app_submission_1/style/colors.dart';
 import 'package:restaurant_app_submission_1/style/style.dart';
-import 'package:restaurant_app_submission_1/widget/common.dart';
 
 class DetailPage extends StatelessWidget {
   static final routeName = '/detail';
@@ -32,6 +36,7 @@ class DetailPage extends StatelessWidget {
           left: 4,
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
               onPressed: () {
@@ -41,7 +46,7 @@ class DetailPage extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 6),
                 child: Icon(
                   Icons.arrow_back_ios,
-                  color: primaryColor,
+                  color: greyColor,
                   size: 16,
                 ),
               ),
@@ -49,7 +54,64 @@ class DetailPage extends StatelessWidget {
                 backgroundColor: Colors.white,
                 shape: CircleBorder(),
               ),
-            )
+            ),
+            Consumer<DetailRestaurantProvider>(
+              builder: (context, provider, child) {
+                if (provider.state == ResourceState.loading) {
+                  return SizedBox.shrink();
+                } else if (provider.state == ResourceState.hasData) {
+                  return Consumer<DatabaseProvider>(
+                    builder: (context, databaseProvider, childe) {
+                      return FutureBuilder<bool>(
+                        future: databaseProvider.isFavorited(
+                            provider.restaurantsResult.restaurant.id),
+                        builder: (context, snapshot) {
+                          var isFavorite = snapshot.data ?? false;
+                          return isFavorite
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    Provider.of<DatabaseProvider>(
+                                      context,
+                                      listen: false,
+                                    ).removeFavorite(provider
+                                        .restaurantsResult.restaurant.id);
+                                  },
+                                  child: Icon(
+                                    Icons.favorite,
+                                    color: greyColor,
+                                    size: 16,
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: CircleBorder(),
+                                  ),
+                                )
+                              : ElevatedButton(
+                                  onPressed: () {
+                                    addFavorite(
+                                      context,
+                                      provider.restaurantsResult.restaurant,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.favorite_border_outlined,
+                                    color: greyColor,
+                                    size: 16,
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    shape: CircleBorder(),
+                                  ),
+                                );
+                        },
+                      );
+                    },
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
           ],
         ),
       ),
@@ -59,9 +121,9 @@ class DetailPage extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     return Consumer<DetailRestaurantProvider>(
       builder: (context, state, _) {
-        if (state.state == ResourceState.Loading) {
+        if (state.state == ResourceState.loading) {
           return circularProgressIndicator();
-        } else if (state.state == ResourceState.HasData) {
+        } else if (state.state == ResourceState.hasData) {
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -79,9 +141,9 @@ class DetailPage extends StatelessWidget {
               ],
             ),
           );
-        } else if (state.state == ResourceState.NoData) {
+        } else if (state.state == ResourceState.noData) {
           return Center(child: Text(state.message));
-        } else if (state.state == ResourceState.Error) {
+        } else if (state.state == ResourceState.error) {
           return Center(child: Text(state.message));
         } else {
           return Center(child: Text(''));
@@ -90,7 +152,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Stack _buildHeaderImage(Restaurant restaurant) {
+  Stack _buildHeaderImage(detail.Restaurant restaurant) {
     return Stack(
       children: [
         Hero(
@@ -105,7 +167,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAbout(BuildContext context, Restaurant restaurant) {
+  Widget _buildAbout(BuildContext context, detail.Restaurant restaurant) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16),
       width: double.infinity,
@@ -128,7 +190,7 @@ class DetailPage extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.star,
-                    color: primaryColor,
+                    color: greyColor,
                     size: 16,
                   ),
                   Container(
@@ -146,7 +208,7 @@ class DetailPage extends StatelessWidget {
                     margin: EdgeInsets.only(left: 12),
                     child: Icon(
                       Icons.location_on,
-                      color: primaryColor,
+                      color: greyColor,
                       size: 16,
                     ),
                   ),
@@ -180,7 +242,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenu(BuildContext context, Restaurant restaurant) {
+  Widget _buildMenu(BuildContext context, detail.Restaurant restaurant) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.only(left: 16, right: 16, top: 16),
@@ -230,7 +292,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReview(BuildContext context, Restaurant restaurant) {
+  Widget _buildReview(BuildContext context, detail.Restaurant restaurant) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(
@@ -261,14 +323,14 @@ class DetailPage extends StatelessWidget {
               showRatingFormDialog(context, restaurant);
             },
             child: Text('Been here ? Rate this place'),
-            style: TextButton.styleFrom(foregroundColor: primaryColor),
+            style: TextButton.styleFrom(foregroundColor: greyColor),
           )
         ],
       ),
     );
   }
 
-  Widget _buildReviewItem(CustomerReview review) {
+  Widget _buildReviewItem(detail.CustomerReview review) {
     return Container(
       margin: EdgeInsets.only(top: 8),
       padding: EdgeInsets.all(8),
@@ -342,7 +404,8 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  void showRatingFormDialog(BuildContext context, Restaurant restaurant) {
+  void showRatingFormDialog(
+      BuildContext context, detail.Restaurant restaurant) {
     var name = "";
     var review = "";
     AlertDialog ratingDialog = AlertDialog(
@@ -423,5 +486,21 @@ class DetailPage extends StatelessWidget {
 
     Provider.of<DetailRestaurantProvider>(context, listen: false)
         .fetchDetailRestaurant(restaurantId);
+  }
+
+  void addFavorite(BuildContext context, detail.Restaurant restaurant) {
+    var restaurantBookmark = Restaurant(
+      id: restaurant.id,
+      name: restaurant.name,
+      description: restaurant.description,
+      pictureId: restaurant.pictureId,
+      city: restaurant.city,
+      rating: restaurant.rating,
+    );
+
+    Provider.of<DatabaseProvider>(
+      context,
+      listen: false,
+    ).addBookmark(restaurantBookmark);
   }
 }
